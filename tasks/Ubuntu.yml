@@ -1,4 +1,10 @@
 ---
+- name: Install requirements
+  apt: name="{{item}}" state=present
+  tags: packages
+  with_items:
+  - python-pip
+
 - name: install python passlib for htpasswd module
   pip: name=passlib state=present
 
@@ -59,7 +65,7 @@
   - userdir
   - wsgi
   notify: restart apache
-  
+
 - name: Enable ldap apache modules
   apache2_module: state=present name={{item}}
   with_items:

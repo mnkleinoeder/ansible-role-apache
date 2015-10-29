@@ -69,7 +69,7 @@
 # Set to one of:  On | Off | extended
 #TraceEnable On
 
-{% if COMMON_PRODUCTION %}
+{% if COMMON_PRODUCTION | default(true) %}
 	ServerTokens Prod
 	ServerSignature Off
 	TraceEnable Off
