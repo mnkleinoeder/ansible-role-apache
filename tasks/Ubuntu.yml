@@ -98,18 +98,18 @@
 - debug: msg="APACHE_USE_HTTP is {{APACHE_USE_HTTP}}"
 - debug: msg="APACHE_USE_HTTPS is {{APACHE_USE_HTTPS}}"
 
-- set_fact: abs_or_pres=absent
-- set_fact: abs_or_pres=present
+- set_fact: __abs_or_pres=absent
+- set_fact: __abs_or_pres=present
   when: APACHE_USE_HTTP
 
-- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+80' line='Listen 80' state={{abs_or_pres}}
+- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+80' line='Listen 80' state={{ __abs_or_pres }}
   notify: restart apache
 
-- set_fact: abs_or_pres=absent
-- set_fact: abs_or_pres=present
+- set_fact: __abs_or_pres=absent
+- set_fact: __abs_or_pres=present
   when: APACHE_USE_HTTPS
 
-- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+443' line='Listen 443' state={{abs_or_pres}}
+- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+443' line='Listen 443' state={{ __abs_or_pres }}
   notify: restart apache
 
 - template: src=conf.d_name_virtual_host.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/name_virtual_host.conf owner=root group=root mode=0444

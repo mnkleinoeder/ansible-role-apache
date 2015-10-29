@@ -1,5 +1,4 @@
 ---
-# common/handlers/main.yml
 - name: start apache
   service: name={{SYS_APACHE_SERVICE}} state=started
 

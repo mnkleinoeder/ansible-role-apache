@@ -1,0 +1,9 @@
+---
+SYS_APACHE_USER: www-data
+SYS_APACHE_GROUP: www-data
+SYS_APACHE_SERVICE: apache2
+SYS_APACHE_SITES_DIR: "/etc/apache2/sites-available"
+SYS_APACHE_LOG_DIR: "/var/log/apache2"
+SYS_APACHE_MODS_DIR: "/etc/apache2/mods-enabled"
+SYS_APACHE_HOME: "/var/www"
+SYS_APACHE_CTL: apache2ctl

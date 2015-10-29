@@ -1,0 +1,11 @@
+---
+SYS_APACHE_USER: apache
+SYS_APACHE_GROUP: apache
+SYS_APACHE_SERVICE: httpd
+SYS_APACHE_SITES_DIR: "/etc/httpd/conf.d"
+SYS_APACHE_LOG_DIR: "/var/log/httpd"
+SYS_APACHE_MODS_DIR: "/etc/httpd/conf.d"
+SYS_APACHE_HOME: "/var/www"
+SYS_APACHE_CTL: apachectl
+SYS_APACHE_CONF_DIR: "/etc/httpd/conf.d"
+
