@@ -1,0 +1,20 @@
+---
+# global settings as default for all virtual hosts
+APACHE_USE_HTTP: false
+APACHE_USE_HTTPS: true
+APACHE_USE_LDAP: false
+
+APACHE_FULL_PROTECTED: true
+APACHE_USE_NAMEVIRTUALHOST: true
+
+APACHE_WEBAPP_DIR: /srv/www/webapps
+APACHE_DOCROOT: /srv/www/htdocs
+
+APACHE_LOG_LEVEL: warn
+APACHE_SERVER_ADMIN: none
+
+APACHE_AuthName: "Restricted Access Area"
+APACHE_AuthUserFile: "{{SYS_APACHE_SITES_DIR}}/.htpasswd"
+APACHE_AuthLDAPGroupAttribute: uniqueMember
+APACHE_AuthLDAPGroupAttributeIsDN: on
+#APACHE_AuthLDAPURL: ldap://SERVER:PORT/ou=OU,dc=EXMPLE,dc=COM?uid?sub?(objectClass=inetOrgPerson)

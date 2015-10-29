@@ -1,0 +1,10 @@
+
+{% if APACHE_USE_LDAP %}
+LDAPVerifyServerCert off
+LDAPSharedCacheSize 500000
+LDAPCacheEntries 1024
+LDAPCacheTTL 36000
+LDAPOpCacheEntries 1024
+LDAPOpCacheTTL 36000
+LDAPSharedCacheFile /var/cache/apache2/ldap-cache
+{% endif %}

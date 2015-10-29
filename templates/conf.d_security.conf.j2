@@ -1,0 +1,97 @@
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# This file is managed by ansible
+# DON'T MODIFY HERE.
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+<Directory />
+	Options -Includes -ExecCGI -Indexes
+	AllowOverride None
+
+{% if SYS_APACHE_VERSION|string == "2.4" %}
+  AllowOverrideList None
+  Require all denied
+{% else %}
+	Order Deny,Allow
+	Deny from all
+{% endif %}
+
+</Directory>
+
+{% if APACHE_FULL_PROTECTED %}
+
+{% for item in [ APACHE_WEBAPP_DIR,  APACHE_DOCROOT ] %}
+
+<Directory {{item}}>
+  AuthType Basic
+  AuthName "{{APACHE_AuthName}}"
+
+  {% if APACHE_USE_LDAP %}
+      AuthLDAPURL {{APACHE_AuthLDAPURL}}
+      AuthLDAPGroupAttribute {{APACHE_AuthLDAPGroupAttribute}}
+      AuthLDAPGroupAttributeIsDN on
+      AuthBasicProvider ldap
+      {% for group in APACHE_LDAP_GROUPS %}
+         Require ldap-group {{group}}
+      {% endfor %}
+  {% else %}
+      AuthBasicProvider file
+      AuthUserFile {{APACHE_AuthUserFile}}
+
+    {% for user in APACHE_HTTPASSWD_USERS|default([]) %}
+      Require user {{user}}
+    {% endfor %}
+  {% endif %}
+
+</Directory>
+
+{% endfor %}
+{% endif %}
+
+<DirectoryMatch "/\.svn">
+{% if SYS_APACHE_VERSION == '2.4' %}
+    Require all denied
+{% else %}
+    Order Deny,Allow
+    Deny from all
+{% endif %}
+</DirectoryMatch>
+
+# Set to one of:  Full | OS | Minimal | Minor | Major | Prod
+# where Full conveys the most information, and Prod the least.
+#ServerTokens Full
+
+# Set to "EMail" to also include a mailto: link to the ServerAdmin.
+# Set to one of:  On | Off | EMail
+#ServerSignature Off
+
+# Set to one of:  On | Off | extended
+#TraceEnable On
+
+{% if COMMON_PRODUCTION %}
+	ServerTokens Prod
+	ServerSignature Off
+	TraceEnable Off
+{% else %}
+	ServerTokens OS
+	ServerSignature On
+	TraceEnable Off
+{% endif %}
+
+
+#
+# Setting this header will prevent MSIE from interpreting files as something
+# else than declared by the content type in the HTTP headers.
+# Requires mod_headers to be enabled.
+#
+#Header set X-Content-Type-Options: "nosniff"
+
+#
+# Setting this header will prevent other sites from embedding pages from this
+# site as frames. This defends against clickjacking attacks.
+# Requires mod_headers to be enabled.
+#
+#Header set X-Frame-Options: "sameorigin"
+
+

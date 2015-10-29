@@ -1,0 +1,28 @@
+---
+- name: install env package groups
+  yum: name="@^web-server-environment" state=present
+
+- name: install packages
+  yum: name="{{item}}" state=present
+  with_items:
+  - php-ldap
+  - mod_authz_ldap
+  - mod_ssl
+  - mod_wsgi
+  notify: restart apache
+
+- name: disable non-standard docroot in brain-dead rhel 
+  lineinfile: >
+    dest=/etc/httpd/conf/httpd.conf
+    regexp='^DocumentRoot'
+    state=absent
+  notify: restart apache
+
+- template: src=wsgi.rhel.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-wsgi.conf
+  notify: restart apache
+
+- file: path={{SYS_APACHE_CONF_DIR}}/ssl.conf state=absent
+  notify: restart apache
+
+- template: src=ssl.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-ssl.conf
+  notify: restart apache

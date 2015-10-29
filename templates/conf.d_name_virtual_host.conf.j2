@@ -1,0 +1,11 @@
+
+{% if APACHE_USE_NAMEVIRTUALHOST %}
+
+    {% if APACHE_USE_HTTP %}
+NameVirtualHost *:80
+    {% endif %}
+    {% if APACHE_USE_HTTPS %}
+NameVirtualHost *:443
+    {% endif %}
+
+{% endif %}

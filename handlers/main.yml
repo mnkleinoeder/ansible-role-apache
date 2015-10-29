@@ -1,0 +1,11 @@
+---
+# common/handlers/main.yml
+- name: start apache
+  service: name={{SYS_APACHE_SERVICE}} state=started
+
+- name: restart apache
+  service: name={{SYS_APACHE_SERVICE}} state=restarted
+
+- name: reload apache
+  service: name={{SYS_APACHE_SERVICE}} state=reloaded
+
