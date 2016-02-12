@@ -16,6 +16,7 @@ APACHE_SERVER_ADMIN: __undefined__
 
 APACHE_AuthName: "Restricted Access Area"
 APACHE_AuthUserFile: "{{SYS_APACHE_SITES_DIR}}/.htpasswd"
+APACHE_HTTPASSWD_USERS: []
 
 APACHE_AuthLDAPGroupAttribute: uniqueMember
 APACHE_AuthLDAPGroupAttributeIsDN: on
@@ -24,3 +25,4 @@ APACHE_USE_LDAP: false
 # if ldap should be used overwrite the following var with your local ldap url such as:
 #APACHE_AuthLDAPURL: ldap://SERVER:PORT/ou=OU,dc=EXMPLE,dc=COM?uid?sub?(objectClass=inetOrgPerson)
 APACHE_AuthLDAPURL: __undefined__
+APACHE_LDAP_GROUPS: []
