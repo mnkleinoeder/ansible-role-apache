@@ -2,13 +2,11 @@
 - name: install env package groups
   yum: name="@^web-server-environment" state=present
 
+#- debug: var=APACHE_DFLT_MODS
+
 - name: install packages
   yum: name="{{item}}" state=present
-  with_items:
-  - php-ldap
-  - mod_authz_ldap
-  - mod_ssl
-  - mod_wsgi
+  with_items: APACHE_DFLT_MODS
   notify: restart apache
 
 - name: disable non-standard docroot in brain-dead rhel 
@@ -18,11 +16,15 @@
     state=absent
   notify: restart apache
 
-- template: src=wsgi.rhel.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-wsgi.conf
-  notify: restart apache
-
 - file: path={{SYS_APACHE_CONF_DIR}}/ssl.conf state=absent
   notify: restart apache
+  when: ansible_distribution_major_version == "6"
+
+- template: src=wsgi.rhel.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-wsgi.conf
+  notify: restart apache
+#  when: ansible_distribution_major_version == "6"
 
 - template: src=ssl.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-ssl.conf
   notify: restart apache
+#  when: ansible_distribution_major_version == "6"
+  

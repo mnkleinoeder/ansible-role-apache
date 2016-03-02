@@ -1,2 +1,4 @@
+{% if SYS_APACHE_VERSION == '2.2' %}
 LoadModule wsgi_module /etc/httpd/modules/mod_wsgi.so
+{% endif %}
 WSGISocketPrefix /var/run/wsgi

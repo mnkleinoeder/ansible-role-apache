@@ -1,2 +1,8 @@
 ---
 SYS_APACHE_VERSION: "2.4"
+
+APACHE_DFLT_MODS:
+  - php-ldap
+  - mod_ldap
+  - mod_ssl
+  - mod_wsgi

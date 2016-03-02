@@ -1,9 +1,12 @@
+{% if SYS_APACHE_VERSION == '2.2' %}
 LoadModule ssl_module /etc/httpd/modules/mod_ssl.so
+SSLMutex default
+{% endif %}
 
 SSLPassPhraseDialog  builtin
 SSLSessionCache         shmcb:/var/cache/mod_ssl/scache(512000)
 SSLSessionCacheTimeout  300
-SSLMutex default
 SSLRandomSeed startup file:/dev/urandom  256
 SSLRandomSeed connect builtin
 SSLCryptoDevice builtin
+
