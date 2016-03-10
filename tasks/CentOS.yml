@@ -9,22 +9,20 @@
   with_items: APACHE_DFLT_MODS
   notify: restart apache
 
-- name: disable non-standard docroot in brain-dead rhel 
+- name: disable non-lsb compliant docroot 
   lineinfile: >
     dest=/etc/httpd/conf/httpd.conf
     regexp='^DocumentRoot'
     state=absent
   notify: restart apache
 
-- file: path={{SYS_APACHE_CONF_DIR}}/ssl.conf state=absent
-  notify: restart apache
-  when: ansible_distribution_major_version == "6"
-
-- template: src=wsgi.rhel.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-wsgi.conf
+- template: src=centos.mod_wsgi.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-wsgi.conf
   notify: restart apache
 #  when: ansible_distribution_major_version == "6"
 
-- template: src=ssl.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/00-ssl.conf
-  notify: restart apache
+#- name: remove distro owned ssl conf
+#  file: path={{SYS_APACHE_CONF_DIR}}/ssl.conf state=absent
+#  notify: restart apache
 #  when: ansible_distribution_major_version == "6"
+
   

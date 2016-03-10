@@ -121,6 +121,13 @@
   when: APACHE_USE_LDAP
   notify: restart apache
 
+- name: set global server name
+  template: src=fqdn.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/fqdn.conf
+  notify: restart apache
+
+##################################################
+# configuration of the firewall
+##################################################
 - set_fact: ufw_is_active=false
 
 - name: check if firewall is enabled

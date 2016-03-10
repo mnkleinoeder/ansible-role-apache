@@ -15,18 +15,22 @@
 - include: CentOS.yml
   when: ansible_distribution == "CentOS"
 
+- name: chown home dir of apache user
+  file: path={{SYS_APACHE_HOME}} state=directory owner={{SYS_APACHE_USER}} group={{SYS_APACHE_GROUP}}
+
 - name: Add header for IE9 compatibility
   lineinfile: "dest={{SYS_APACHE_MODS_DIR}}/ie9-compat.conf
     line='Header set X-UA-Compatible: IE=EDGE'
     create=yes"
   notify: reload apache
 
-- name: chown home dir of apache user
-  file: path={{SYS_APACHE_HOME}} state=directory owner={{SYS_APACHE_USER}} group={{SYS_APACHE_GROUP}}
-
-- name: copy basic security file to take effect
+- name: copy basic security file
   template: src=conf.d_security.conf.j2 dest="{{SYS_APACHE_CONF_DIR}}/security.conf" owner=root group=root mode=0444
   notify: reload apache
+
+- name: copy ssl conf
+  template: src=ssl.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/zz_ssl.conf
+  notify: restart apache
 
 # OS independent config
 - name: webapps dir

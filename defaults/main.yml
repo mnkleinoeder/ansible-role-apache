@@ -3,6 +3,11 @@
 APACHE_USE_HTTP: true
 APACHE_USE_HTTPS: true
 
+# if enabled clients must be rather recent
+# Firefox 27, Chrome 30, IE 11 on Windows 7, Edge, Opera 17, Safari 9, Android 5.0, and Java 8
+# see https://mozilla.github.io/server-side-tls/ssl-config-generator/
+APACHE_SSL_HIGHSEC: false
+
 APACHE_FULL_PROTECTED: false
 APACHE_USE_NAMEVIRTUALHOST: true
 
