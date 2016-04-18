@@ -11,6 +11,8 @@ APACHE_SSL_HIGHSEC: false
 APACHE_FULL_PROTECTED: false
 APACHE_USE_NAMEVIRTUALHOST: true
 
+APACHE_USE_DEFAULT_VHOST: false
+
 # the LSB compliant data dirs for apache (no /var/www or
 APACHE_WEBAPP_DIR: /srv/www/webapps
 APACHE_DOCROOT: /srv/www/htdocs

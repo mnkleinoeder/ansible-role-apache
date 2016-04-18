@@ -1,0 +1,49 @@
+# {{ansible_managed}}
+
+{% if VHOST_USE_HTTP | bool %}
+<VirtualHost *:80>
+	LogLevel {{VHOST_LOG_LEVEL}}
+	CustomLog {{SYS_APACHE_LOG_DIR}}/_default_.com_access.log combined
+	ErrorLog  {{SYS_APACHE_LOG_DIR}}/_default_.com_error.log
+	ServerName {{ansible_default_ipv4.address}}
+
+	{% for item in [ 'Directory', 'Location' ] %}
+		<{{ item }} />
+	    {% if SYS_APACHE_VERSION == "2.2"  %}
+	      Order deny,allow
+	      Deny from all
+	    {% else %}
+	      Require all denied
+	    {% endif %}
+		</{{ item }}>
+  {% endfor %}
+</VirtualHost>
+
+{% endif %}
+
+{% if VHOST_USE_HTTPS | bool %}
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+  LogLevel {{VHOST_LOG_LEVEL}}
+  CustomLog {{SYS_APACHE_LOG_DIR}}/_default_-ssl_access.log combined
+  ErrorLog  {{SYS_APACHE_LOG_DIR}}/_default_-ssl_error.log
+	ServerName {{ansible_default_ipv4.address}}
+
+	SSLEngine on
+  SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+	{% for item in [ 'Directory', 'Location' ] %}
+		<{{ item }} />
+	    {% if SYS_APACHE_VERSION == "2.2"  %}
+	      Order deny,allow
+	      Deny from all
+	    {% else %}
+	      Require all denied
+	    {% endif %}
+		</{{ item }}>
+  {% endfor %}
+	
+</VirtualHost>
+</IfModule>
+{% endif %}

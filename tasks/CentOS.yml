@@ -2,6 +2,7 @@
 - name: install env package groups
   yum: name="@^web-server-environment" state=present
 
+- service: name=httpd enabled=yes state=started
 #- debug: var=APACHE_DFLT_MODS
 
 - name: install packages
