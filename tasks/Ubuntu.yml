@@ -31,7 +31,12 @@
   - php5-odbc
   - php5-sqlite
   - php5-mysql
+  - php5-gd
+  - php5-ldap
+  - php5-mcrypt
   notify: restart apache
+
+- shell: php5enmod mcrypt
 
 # php caching module does not work with ubuntu1404 and owncloud8
 # as php modules are global we disable caching globally
