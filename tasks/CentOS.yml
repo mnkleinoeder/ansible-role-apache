@@ -21,10 +21,11 @@
   notify: restart apache
 #  when: ansible_distribution_major_version == "6"
 
-- name: remove distro owned ssl conf
-  file: path={{SYS_APACHE_CONF_DIR}}/ssl.conf state=absent
-  notify: restart apache
-  when: ansible_distribution_major_version == "6"
+# 
+#- name: remove distro owned ssl conf
+#  file: path={{SYS_APACHE_CONF_DIR}}/ssl.conf state=absent
+#  notify: restart apache
+#  when: ansible_distribution_major_version == "6"
 
 - name: remove old ssl file from previous deployments
   file: path={{SYS_APACHE_CONF_DIR}}/0-ssl.conf state=absent
