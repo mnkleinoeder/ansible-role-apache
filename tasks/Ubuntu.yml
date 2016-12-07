@@ -16,7 +16,7 @@
   - apache2-utils
   - libapache2-mod-wsgi
   - libapache2-mod-php5
-  - libapache2-mod-fastcgi
+#  - libapache2-mod-fastcgi
 
 - name: Install php5  state=present
   apt: name={{ item }}
@@ -60,7 +60,6 @@
   - authn_file
   - authz_user
   - env
-  - fastcgi
   - headers
   - php5
   - proxy
@@ -69,6 +68,7 @@
   - rewrite
   - userdir
   - wsgi
+#  - fastcgi
   notify: restart apache
 
 - name: Enable ldap apache modules
