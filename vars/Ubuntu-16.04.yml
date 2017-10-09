@@ -1,0 +1,3 @@
+---
+SYS_APACHE_CONF_DIR: "/etc/apache2/conf-enabled"
+SYS_APACHE_VERSION: "2.4"

@@ -1,12 +1,15 @@
 ---
-- name: Install requirements
-  apt: name="{{item}}" state=present
-  tags: packages
+- name: Ensure python-pip is available
+  apt:
+    name: "{{ item }}"
+    state: present
   with_items:
   - python-pip
 
-- name: install python passlib for htpasswd module
-  pip: name=passlib state=present
+- name: Install python passlib for htpasswd module
+  pip: 
+    name: passlib
+    state: present
 
 - name: Install Apache2
   apt: name="{{item}}" state=present
@@ -15,44 +18,44 @@
   - apache2
   - apache2-utils
   - libapache2-mod-wsgi
-  - libapache2-mod-php5
-#  - libapache2-mod-fastcgi
-
-- name: Install php5  state=present
-  apt: name={{ item }}
-  tags: packages
-  with_items:
-  - php5
-  - php5-common
-  - php5-cgi
-  - php5-cli
-  - php5-curl
-  - php5-json
-  - php5-odbc
-  - php5-sqlite
-  - php5-mysql
-  - php5-gd
-  - php5-ldap
-  - php5-mcrypt
-  notify: restart apache
-
-- shell: php5enmod mcrypt
+#  - libapache2-mod-php5
+##  - libapache2-mod-fastcgi
+#
+#- name: Install php5  state=present
+#  apt: name={{ item }}
+#  tags: packages
+#  with_items:
+#  - php5
+#  - php5-common
+#  - php5-cgi
+#  - php5-cli
+#  - php5-curl
+#  - php5-json
+#  - php5-odbc
+#  - php5-sqlite
+#  - php5-mysql
+#  - php5-gd
+#  - php5-ldap
+#  - php5-mcrypt
+#  notify: restart apache
+#
+#- shell: php5enmod mcrypt
 
 # php caching module does not work with ubuntu1404 and owncloud8
 # as php modules are global we disable caching globally
-- name: Uninstall php caching module on Ubuntu1404
-  apt: name={{ item }} state=absent
-  with_items:
-  - php5-apcu
-  tags: packages
-  when: SYS_APACHE_VERSION|version_compare('2.4', '==')
-  notify: restart apache
-
-- name: addapt php.ini
-  lineinfile: 'dest=/etc/php5/apache2/php.ini
-    regexp="^[;\s]*default_charset\s*=\s*"
-    line="default_charset = \"UTF-8\""'
-  notify: reload apache
+#- name: Uninstall php caching module on Ubuntu1404
+#  apt: name={{ item }} state=absent
+#  with_items:
+#  - php5-apcu
+#  tags: packages
+#  when: SYS_APACHE_VERSION|version_compare('2.4', '==')
+#  notify: restart apache
+#
+#- name: addapt php.ini
+#  lineinfile: 'dest=/etc/php5/apache2/php.ini
+#    regexp="^[;\s]*default_charset\s*=\s*"
+#    line="default_charset = \"UTF-8\""'
+#  notify: reload apache
 
 - name: Enable apache modules
   apache2_module: state=present name={{item}}
@@ -61,7 +64,7 @@
   - authz_user
   - env
   - headers
-  - php5
+#  - php5
   - proxy
   - proxy_http
   - ssl
@@ -97,7 +100,6 @@
   - 000-default.conf
   - 000-default-ssl
   - 000-default-ssl.conf
-  - egroupware.conf # may be left-over from egroupware installation
   notify: reload apache
 
 - debug: msg="APACHE_USE_HTTP is {{APACHE_USE_HTTP}}"
@@ -118,8 +120,7 @@
   notify: restart apache
 
 - template: src=conf.d_name_virtual_host.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/name_virtual_host.conf owner=root group=root mode=0444
-  when: APACHE_USE_NAMEVIRTUALHOST
-  when: SYS_APACHE_VERSION|version_compare('2.4', '<')
+  when: APACHE_USE_NAMEVIRTUALHOST and SYS_APACHE_VERSION|version_compare('2.4', '<')
   notify: restart apache
 
 - template: src=conf.d_ldap.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/ldap.conf owner=root group=root mode=0444

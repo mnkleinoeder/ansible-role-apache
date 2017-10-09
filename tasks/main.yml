@@ -1,60 +1,22 @@
 ---
 - include_vars: "{{ansible_distribution}}.yml"
 
-- include_vars: "{{ansible_distribution}}-{{ansible_distribution_major_version}}.yml"
-  when: ansible_distribution == "CentOS"
-
-- include_vars: "{{ansible_distribution}}-{{ansible_distribution_version}}.yml"
-  when: ansible_distribution == "Ubuntu"
+- include_vars: "{{item}}"
+  with_first_found:
+  - "{{ansible_distribution}}-{{ansible_distribution_version}}.yml"
+  - "{{ansible_distribution}}-{{ansible_distribution_major_version}}.yml"
 
 - include_vars: "apache-{{ SYS_APACHE_VERSION }}.yml"
 
-- include: Ubuntu.yml
-  when: ansible_distribution == "Ubuntu"
+- name: create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - "{{ APACHE_WEBAPP_DIR }}"
+  - "{{ APACHE_DOCROOT }}"
 
-- include: CentOS.yml
-  when: ansible_distribution == "CentOS"
+- include_tasks: "apache_install_{{ ansible_distribution }}.yml"
 
-- name: chown home dir of apache user
-  file: path={{SYS_APACHE_HOME}} state=directory owner={{SYS_APACHE_USER}} group={{SYS_APACHE_GROUP}}
+- include_tasks: "apache_base_conf.yml"
 
-- name: Add header for IE9 compatibility
-  lineinfile: "dest={{SYS_APACHE_MODS_DIR}}/ie9-compat.conf
-    line='Header set X-UA-Compatible: IE=EDGE'
-    create=yes"
-  notify: reload apache
-
-- name: copy basic security file
-  template: src=conf.d_security.conf.j2 dest="{{SYS_APACHE_CONF_DIR}}/security.conf" owner=root group=root mode=0444
-  notify: reload apache
-
-- name: copy default "catch-all" vhost
-  template: src=vhost-template-default.j2 dest="{{SYS_APACHE_SITES_DIR}}/0000-default-vhost.conf" owner=root group=root mode=0444
-  when: APACHE_USE_DEFAULT_VHOST
-  notify: restart apache
-
-- name: Enable vhosts-conf
-  file: >
-    src="/etc/apache2/sites-available/0000-default-vhost.conf"
-    dest="/etc/apache2/sites-enabled/0000-default-vhost.conf"
-    state=link
-  when: ansible_distribution == "Ubuntu"
-  when: APACHE_USE_DEFAULT_VHOST
-  notify: restart apache
-
-- name: copy ssl conf
-  template: src=ssl.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/zz_ssl.conf
-  notify: restart apache
-
-# OS independent config
-- name: webapps dir
-  file: path={{APACHE_WEBAPP_DIR}} state=directory owner=root group=root
-
-- name: docroot dir
-  file: path={{APACHE_DOCROOT}} state=directory owner=root group=root
-
-- name: give read access to apache log dir
-  file: path={{SYS_APACHE_LOG_DIR}} state=directory mode=o+xr
-#- name: ensure that we did not mess up apache config
-#  command: apache2ctl -t
-#  changed_when: false
