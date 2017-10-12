@@ -15,36 +15,39 @@
   notify: reload apache
 
 - name: copy basic security file
-  template: src=conf.d_security.conf.j2 dest="{{SYS_APACHE_CONF_DIR}}/security.conf" owner=root group=root mode=0444
+  template:
+    src: conf.d_security.conf.j2
+    dest: "{{ SYS_APACHE_CONF_DIR }}/security.conf"
+    owner: root
+    group: root
+    mode: 0444
   notify: reload apache
 
 - name: copy default "catch-all" vhost
-  template: src=vhost-template-default.j2 dest="{{SYS_APACHE_SITES_DIR}}/0000-default-vhost.conf" owner=root group=root mode=0444
+  template:
+    src: vhost-template-default.j2
+    dest: "{{ SYS_APACHE_SITES_DIR }}/0000-default-vhost.conf"
+    owner: root
+    group: root
+    mode: 0444
   when: APACHE_USE_DEFAULT_VHOST
   notify: restart apache
 
 - name: Enable vhosts-conf
-  file: >
-    src="/etc/apache2/sites-available/0000-default-vhost.conf"
-    dest="/etc/apache2/sites-enabled/0000-default-vhost.conf"
-    state=link
-  when: ansible_distribution == "Ubuntu"
-  when: APACHE_USE_DEFAULT_VHOST
+  file:
+    src: "/etc/apache2/sites-available/0000-default-vhost.conf"
+    dest: "/etc/apache2/sites-enabled/0000-default-vhost.conf"
+    state: link
+  when: ansible_distribution == "Ubuntu" and APACHE_USE_DEFAULT_VHOST
   notify: restart apache
 
 - name: copy ssl conf
-  template: src=ssl.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/zz_ssl.conf
+  template:
+    src: ssl.conf.j2
+    dest: "{{ SYS_APACHE_CONF_DIR }}/zz_ssl.conf"
   notify: restart apache
 
-# OS independent config
-- name: webapps dir
-  file: path={{APACHE_WEBAPP_DIR}} state=directory owner=root group=root
-
-- name: docroot dir
-  file: path={{APACHE_DOCROOT}} state=directory owner=root group=root
-
-- name: give read access to apache log dir
-  file: path={{SYS_APACHE_LOG_DIR}} state=directory mode=o+xr
-#- name: ensure that we did not mess up apache config
-#  command: apache2ctl -t
-#  changed_when: false
+- name: ensure that we did not mess up apache config
+  command: >
+    {{ SYS_APACHE_CTL }} -t
+  changed_when: false

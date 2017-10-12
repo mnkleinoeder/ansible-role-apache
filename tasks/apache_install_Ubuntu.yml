@@ -1,23 +1,4 @@
 ---
-- name: Ensure python-pip is available
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-  - python-pip
-
-- name: Install python passlib for htpasswd module
-  pip: 
-    name: passlib
-    state: present
-
-- name: Install Apache2
-  apt: name="{{item}}" state=present
-  tags: packages
-  with_items:
-  - apache2
-  - apache2-utils
-  - libapache2-mod-wsgi
 #  - libapache2-mod-php5
 ##  - libapache2-mod-fastcgi
 #
@@ -64,14 +45,12 @@
   - authz_user
   - env
   - headers
-#  - php5
   - proxy
   - proxy_http
   - ssl
   - rewrite
   - userdir
   - wsgi
-#  - fastcgi
   notify: restart apache
 
 - name: Enable ldap apache modules
@@ -109,16 +88,29 @@
 - set_fact: __abs_or_pres=present
   when: APACHE_USE_HTTP
 
-- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+80' line='Listen 80' state={{ __abs_or_pres }}
+- name: manage HTTP port
+  lineinfile:
+    line: "Listen 80"
+    dest: "/etc/apache2/ports.conf"
+    regexp: '\s*[l|L]isten\s+80'
+    state: "{{ __abs_or_pres }}"
   notify: restart apache
+#- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+80' line='Listen 80' state={{ __abs_or_pres }}
+#  notify: restart apache
 
 - set_fact: __abs_or_pres=absent
 - set_fact: __abs_or_pres=present
   when: APACHE_USE_HTTPS
 
-- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+443' line='Listen 443' state={{ __abs_or_pres }}
+- name: manage HTTPS port
+  lineinfile:
+    line: "Listen 443"
+    dest: "/etc/apache2/ports.conf"
+    regexp: '\s*[l|L]isten\s+443'
+    state: "{{ __abs_or_pres }}"
   notify: restart apache
 
+# 2.4: AH00548: NameVirtualHost has no effect and will be removed in the next release
 - template: src=conf.d_name_virtual_host.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/name_virtual_host.conf owner=root group=root mode=0444
   when: APACHE_USE_NAMEVIRTUALHOST and SYS_APACHE_VERSION|version_compare('2.4', '<')
   notify: restart apache
@@ -134,27 +126,27 @@
 ##################################################
 # configuration of the firewall
 ##################################################
-- set_fact: ufw_is_active=false
+- set_fact:
+    ufw_is_active: false
 
 - name: check if firewall is enabled
   shell: LANG=C ufw status
   changed_when: false
   register: ufw_status
 
-- set_fact: ufw_is_active=true
+- set_fact:
+    ufw_is_active: true
   when: "'Status: active' in ufw_status.stdout"
 
 - name: open port 80
-  ufw: rule=allow name=Apache
+  ufw:
+    name: Apache
+    rule: allow
   when: ufw_is_active and APACHE_USE_HTTP
 
 - name: open port 443
-  ufw: rule=allow name="Apache Secure"
+  ufw:
+    name: "Apache Secure"
+    rule: allow 
   when: ufw_is_active and APACHE_USE_HTTPS
-
-#- name: cleanup stale vhosts.
-#  shell: rm -f /etc/apache2/sites-enabled/*
-#  changed_when: false
-
-
 

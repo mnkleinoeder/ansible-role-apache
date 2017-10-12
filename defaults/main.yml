@@ -34,3 +34,4 @@ APACHE_USE_LDAP: false
 #APACHE_AuthLDAPURL: ldap://SERVER:PORT/ou=OU,dc=EXMPLE,dc=COM?uid?sub?(objectClass=inetOrgPerson)
 APACHE_AuthLDAPURL: __undefined__
 APACHE_LDAP_GROUPS: []
+
