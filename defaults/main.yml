@@ -20,7 +20,7 @@ APACHE_DOCROOT: /srv/www/htdocs
 APACHE_LOG_LEVEL: warn
 
 # overwrite with your local setting
-APACHE_SERVER_ADMIN: __undefined__
+APACHE_SERVER_ADMIN: "{{ COMMON_ADMIN_EMAIL | default('__undefined__') }}"
 
 APACHE_AuthName: "Restricted Access Area"
 APACHE_AuthUserFile: "{{SYS_APACHE_SITES_DIR}}/.htpasswd"
