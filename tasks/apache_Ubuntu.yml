@@ -150,3 +150,11 @@
     rule: allow 
   when: ufw_is_active and APACHE_USE_HTTPS
 
+- name: Ensure python-pip is available
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - python-pip
+  tags: [ apache, flesh ]
+

@@ -8,7 +8,10 @@ SYS_APACHE_MODS_DIR: "/etc/apache2/mods-enabled"
 SYS_APACHE_HOME: "/var/www"
 SYS_APACHE_CTL: apache2ctl
 
-apache_packages:
+apache_base_packages:
   - apache2
   - apache2-utils
-  - libapache2-mod-wsgi
+
+__apache_other_packages:
+  - libapache2-mod-wsgi-py3
+  

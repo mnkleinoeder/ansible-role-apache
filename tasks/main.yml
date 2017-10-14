@@ -17,6 +17,7 @@
   with_items:
   - "{{ APACHE_WEBAPP_DIR }}"
   - "{{ APACHE_DOCROOT }}"
+  tags: [ apache, flesh ]
 
 - name: give read access to apache log dir
   file:
@@ -24,25 +25,22 @@
     state: directory
     mode: o+xr
 
-- name: Ensure python-pip is available
-  apt:
-    name: "{{ item }}"
+- name: Install Apache2
+  package:
+    name: "{{ apache_base_packages | union(apache_other_packages) }}"
     state: present
+  tags: [ apache, packages, flesh ]
+
+- include_tasks: "{{ task_file }}"
   with_items:
-  - python-pip
+  - "apache_{{ ansible_distribution }}.yml"
+  - "apache_base_conf.yml"
+  loop_control:
+    loop_var: task_file
+  tags: [ apache, packages, flesh ]
 
 - name: Install python passlib for htpasswd module
   pip: 
     name: passlib
     state: present
-
-- name: Install Apache2
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ apache_packages }}"
-  tags: packages
-
-- include_tasks: "apache_install_{{ ansible_distribution }}.yml"
-- include_tasks: "apache_base_conf.yml"
 
