@@ -12,6 +12,21 @@ apache_base_packages:
   - apache2
   - apache2-utils
 
-__apache_other_packages:
-  - libapache2-mod-wsgi-py3
-  
+apache_base_modules:
+  - mod: authn_file
+  - mod: authz_user
+  - mod: env
+  - mod: headers
+  - mod: proxy
+  - mod: proxy_http
+  - mod: ssl
+  - mod: rewrite
+  - mod: userdir
+  - mod: wsgi
+
+apache_php_packages:
+  - libapache2-mod-php
+
+#__apache_other_packages: []
+#  - libapache2-mod-wsgi-py3
+

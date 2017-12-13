@@ -1,56 +1,19 @@
 ---
-#  - libapache2-mod-php5
-##  - libapache2-mod-fastcgi
-#
-#- name: Install php5  state=present
-#  apt: name={{ item }}
-#  tags: packages
-#  with_items:
-#  - php5
-#  - php5-common
-#  - php5-cgi
-#  - php5-cli
-#  - php5-curl
-#  - php5-json
-#  - php5-odbc
-#  - php5-sqlite
-#  - php5-mysql
-#  - php5-gd
-#  - php5-ldap
-#  - php5-mcrypt
-#  notify: restart apache
-#
-#- shell: php5enmod mcrypt
 
-# php caching module does not work with ubuntu1404 and owncloud8
-# as php modules are global we disable caching globally
-#- name: Uninstall php caching module on Ubuntu1404
-#  apt: name={{ item }} state=absent
-#  with_items:
-#  - php5-apcu
-#  tags: packages
-#  when: SYS_APACHE_VERSION|version_compare('2.4', '==')
-#  notify: restart apache
-#
-#- name: addapt php.ini
-#  lineinfile: 'dest=/etc/php5/apache2/php.ini
-#    regexp="^[;\s]*default_charset\s*=\s*"
-#    line="default_charset = \"UTF-8\""'
-#  notify: reload apache
+
+- name: install modules
+  apt:
+    name: "{{ item.package_name }}"
+    state: "{{ item.state | default('present') }}"
+  when: "item.package_name is defined"
+  with_items: "{{ apache_base_modules }}"
+  notify: restart apache
 
 - name: Enable apache modules
-  apache2_module: state=present name={{item}}
-  with_items:
-  - authn_file
-  - authz_user
-  - env
-  - headers
-  - proxy
-  - proxy_http
-  - ssl
-  - rewrite
-  - userdir
-  - wsgi
+  apache2_module:
+    name:  "{{ item.mod }}"
+    state: "{{ item.state | default('present') }}"
+  with_items: "{{ apache_base_modules }}"
   notify: restart apache
 
 - name: Enable ldap apache modules
@@ -95,8 +58,6 @@
     regexp: '\s*[l|L]isten\s+80'
     state: "{{ __abs_or_pres }}"
   notify: restart apache
-#- lineinfile: dest=/etc/apache2/ports.conf regexp='\s*[l|L]isten\s+80' line='Listen 80' state={{ __abs_or_pres }}
-#  notify: restart apache
 
 - set_fact: __abs_or_pres=absent
 - set_fact: __abs_or_pres=present
@@ -110,18 +71,31 @@
     state: "{{ __abs_or_pres }}"
   notify: restart apache
 
-# 2.4: AH00548: NameVirtualHost has no effect and will be removed in the next release
-- template: src=conf.d_name_virtual_host.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/name_virtual_host.conf owner=root group=root mode=0444
-  when: APACHE_USE_NAMEVIRTUALHOST and SYS_APACHE_VERSION|version_compare('2.4', '<')
+- name:  "2.4: AH00548: NameVirtualHost has no effect and will be removed in the next release"
+  template:
+    src: conf.d_name_virtual_host.conf.j2
+    dest: "{{ SYS_APACHE_CONF_DIR }}/name_virtual_host.conf"
+    owner: root
+    group: root
+    mode: 0444
+  when: SYS_APACHE_VERSION|version_compare('2.4', '<') and APACHE_USE_NAMEVIRTUALHOST
   notify: restart apache
 
-- template: src=conf.d_ldap.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/ldap.conf owner=root group=root mode=0444
+- template:
+    src: conf.d_ldap.conf.j2
+    dest: "{{ SYS_APACHE_CONF_DIR }}/ldap.conf"
+    owner: root
+    group: root
+    mode: 0444
   when: APACHE_USE_LDAP
   notify: restart apache
 
 - name: set global server name
-  template: src=fqdn.conf.j2 dest={{SYS_APACHE_CONF_DIR}}/fqdn.conf
+  template:
+    src: fqdn.conf.j2
+    dest: "{{SYS_APACHE_CONF_DIR}}/fqdn.conf"
   notify: restart apache
+
 
 ##################################################
 # configuration of the firewall
@@ -157,4 +131,44 @@
   with_items:
   - python-pip
   tags: [ apache, flesh ]
+
+#  - libapache2-mod-php5
+##  - libapache2-mod-fastcgi
+#
+#- name: Install php5  state=present
+#  apt: name={{ item }}
+#  tags: packages
+#  with_items:
+#  - php5
+#  - php5-common
+#  - php5-cgi
+#  - php5-cli
+#  - php5-curl
+#  - php5-json
+#  - php5-odbc
+#  - php5-sqlite
+#  - php5-mysql
+#  - php5-gd
+#  - php5-ldap
+#  - php5-mcrypt
+#  notify: restart apache
+#
+#- shell: php5enmod mcrypt
+
+# php caching module does not work with ubuntu1404 and owncloud8
+# as php modules are global we disable caching globally
+#- name: Uninstall php caching module on Ubuntu1404
+#  apt: name={{ item }} state=absent
+#  with_items:
+#  - php5-apcu
+#  tags: packages
+#  when: SYS_APACHE_VERSION|version_compare('2.4', '==')
+#  notify: restart apache
+#
+#- name: addapt php.ini
+#  lineinfile: 'dest=/etc/php5/apache2/php.ini
+#    regexp="^[;\s]*default_charset\s*=\s*"
+#    line="default_charset = \"UTF-8\""'
+#  notify: reload apache
+
 

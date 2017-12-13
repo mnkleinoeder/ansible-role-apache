@@ -25,9 +25,13 @@
     state: directory
     mode: o+xr
 
+- set_fact:
+    _php: "{{ apache_php_packages }}"
+  when: apache_enable_php
+
 - name: Install Apache2
   package:
-    name: "{{ apache_base_packages | union(apache_other_packages) }}"
+    name: "{{ apache_base_packages | union(apache_other_packages) | union(_php | default([]) ) }}"
     state: present
   tags: [ apache, packages, flesh ]
 

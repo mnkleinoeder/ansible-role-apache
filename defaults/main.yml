@@ -35,4 +35,7 @@ APACHE_USE_LDAP: false
 APACHE_AuthLDAPURL: __undefined__
 APACHE_LDAP_GROUPS: []
 
-apache_other_packages: "{{ __apache_other_packages }}"
+apache_other_packages: []
+apache_other_modules:  []
+
+apache_enable_php: false
