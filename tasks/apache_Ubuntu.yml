@@ -130,7 +130,7 @@
     state: present
   with_items:
   - python-pip
-  tags: [ apache, flesh ]
+  tags: [ apache, provision ]
 
 #  - libapache2-mod-php5
 ##  - libapache2-mod-fastcgi

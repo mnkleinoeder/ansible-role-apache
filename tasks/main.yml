@@ -17,7 +17,7 @@
   with_items:
   - "{{ APACHE_WEBAPP_DIR }}"
   - "{{ APACHE_DOCROOT }}"
-  tags: [ apache, flesh ]
+  tags: [ apache, provision ]
 
 - name: give read access to apache log dir
   file:
@@ -33,7 +33,7 @@
   package:
     name: "{{ apache_base_packages | union(apache_other_packages) | union(_php | default([]) ) }}"
     state: present
-  tags: [ apache, packages, flesh ]
+  tags: [ apache, packages, provision ]
 
 - include_tasks: "{{ task_file }}"
   with_items:
@@ -41,7 +41,7 @@
   - "apache_base_conf.yml"
   loop_control:
     loop_var: task_file
-  tags: [ apache, packages, flesh ]
+  tags: [ apache, packages, provision ]
 
 - name: Install python passlib for htpasswd module
   pip: 
